@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bite & Bytes - AI-Powered Restaurant & HITL Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom Modern Dark Glassmorphism Styling */
+        :root {
+            --bg-gradient: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            --primary: #6366f1; /* Indigo */
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --secondary: #ec4899; /* Pink */
+            --success: #10b981; /* Emerald */
+            --success-glow: rgba(16, 185, 129, 0.3);
+            --warning: #f59e0b; /* Amber */
+            --danger: #ef4444; /* Rose */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-glow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100/vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, .font-outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Glassmorphism utility card */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-glow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Header Navigation */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.7);
+            backdrop-filter: blur(12px);
+            border-b: 1px solid var(--glass-border);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .logo-box i {
+            font-size: 1.25rem;
+            color: #fff;
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #a5b4fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.4rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.25s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        /* Thread Selector info */
+        .thread-info {
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .thread-info span {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Main Workspace */
+        main {
+            max-width: 1400px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-content {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: grid;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Customer Tab Layout (Two columns) */
+        #customer-view {
+            grid-template-columns: 1fr 380px;
+            gap: 2rem;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Visual Menu Section */
+        .menu-section {
+            padding: 1.5rem;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .menu-filters {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip.active, .filter-chip:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .menu-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .menu-card-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+        }
+
+        .menu-card-body {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .menu-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-card-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            flex: 1;
+        }
+
+        .menu-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .menu-card-price {
+            font-weight: 800;
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+
+        .menu-card-stock {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--glass-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .menu-card-stock.low-stock {
+            border-color: var(--danger);
+            color: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+
+        .add-to-cart-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* Conversational Agent Section */
+        .chat-section {
+            height: 480px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-agent-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: rgba(2, 6, 23, 0.2);
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 0.9rem 1.25rem;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            line-height: 1.45;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .chat-bubble.assistant {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-bubble.user {
+            align-self: flex-end;
+            background: var(--primary);
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .chat-bubble.system {
+            align-self: center;
+            max-width: 90%;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--warning);
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .chat-bubble p {
+            margin-bottom: 0.4rem;
+        }
+        .chat-bubble p:last-child {
+            margin-bottom: 0;
+        }
+        .chat-bubble ul, .chat-bubble ol {
+            margin-left: 1.2rem;
+            margin-top: 0.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .chat-input-area {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+        }
+
+        .send-btn {
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* Right Column customer components */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Shopping Cart Panel */
+        .cart-panel {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            max-height: 400px;
+        }
+
+        .cart-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .cart-item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .cart-item-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .cart-item-price {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cart-qty-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            width: 24px;
+            height: 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-qty-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .cart-item-qty {
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 20px;
+            text-align: center;
+        }
+
+        .cart-total-section {
+            border-top: 1px solid var(--glass-border);
+            padding-top: 1rem;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .cart-total-price {
+            color: var(--secondary);
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            border: none;
+            color: #fff;
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-top: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .checkout-btn:disabled {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--glass-border);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Recommendations Carousel */
+        .recommendation-panel {
+            padding: 1.25rem;
+        }
+
+        .recs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .rec-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            transition: border-color 0.2s ease;
+        }
+
+        .rec-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .rec-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .rec-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .rec-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .rec-price {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .rec-add-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--primary);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rec-add-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* Order Tracking Stepper */
+        .order-tracker-panel {
+            padding: 1.5rem;
+            display: none; /* Only visible when an order exists */
+        }
+
+        .tracker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .tracker-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .tracker-steps::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .tracker-progress-line {
+            position: absolute;
+            top: 14px;
+            left: 10%;
+            width: 0%; /* Dynamic width based on step */
+            height: 2px;
+            background: var(--primary);
+            z-index: 2;
+            transition: width 0.4s ease;
+        }
+
+        .step-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 3;
+            width: 60px;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .step-node.active .step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .step-node.completed .step-circle {
+            background: var(--success);
+            border-color: var(--success);
+            color: #fff;
+            box-shadow: 0 0 10px var(--success-glow);
+        }
+
+        .step-node.rejected .step-circle {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #fff;
+        }
+
+        .step-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .step-node.active .step-label, .step-node.completed .step-label {
+            color: var(--text-main);
+        }
+
+        .step-node.rejected .step-label {
+            color: var(--danger);
+        }
+
+        /* ---------------------------------------------------- */
+        /* Manager Tab Layout (3 sections: Pending Queue, Inventory, Analytics) */
+        #manager-view {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .manager-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .manager-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Pending Approval Orders Queue */
+        .pending-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .pending-order-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .pending-order-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .order-meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .order-id-label {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .order-thread-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .pending-order-items {
+            background: rgba(0, 0, 0, 0.15);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .pending-item-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+        }
+
+        .pending-item-name {
+            font-weight: 500;
+        }
+
+        .pending-item-qty {
+            color: var(--text-muted);
+        }
+
+        .pending-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .pending-total-val {
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+
+        .manager-note-input {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.8rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .manager-note-input:focus {
+            border-color: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .approve-btn {
+            background: var(--success);
+            color: #fff;
+            box-shadow: 0 4px 12px var(--success-glow);
+        }
+
+        .approve-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .reject-btn {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .reject-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .empty-pending-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            gap: 0.75rem;
+        }
+
+        .empty-pending-state i {
+            font-size: 2.5rem;
+            color: var(--success);
+            opacity: 0.5;
+        }
+
+        /* Analytics Section */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .metric-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .revenue-val {
+            color: var(--success);
+        }
+
+        .popular-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .popular-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .popular-progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 0.25rem;
+        }
+
+        .popular-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Inventory Manager Section */
+        .inventory-table-container {
+            overflow-x: auto;
+            max-height: 450px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        th {
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .replenish-input {
+            width: 60px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            padding: 0.25rem 0.4rem;
+            color: #fff;
+            text-align: center;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        .replenish-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .replenish-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Toasts System */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 0.9rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+            min-width: 250px;
+            animation: slideIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success i { color: var(--success); }
+        .toast.error i { color: var(--danger); }
+        .toast.info i { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-box">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Bite & Bytes</h1>
+                    <p>AI Restaurant System</p>
+                </div>
+            </div>
+            
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('customer')">
+                    <i class="fa-solid fa-user"></i> Customer Portal
+                </button>
+                <button class="tab-btn" onclick="switchTab('manager')">
+                    <i class="fa-solid fa-shield-halved"></i> Manager Dashboard
+                </button>
+            </div>
+            
+            <div class="thread-info">
+                Session ID: <span id="thread-id-display">default_thread</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- CUSTOMER VIEW -->
+        <div id="customer-view" class="tab-content active">
+            <div class="left-column">
+                <!-- Visual Menu -->
+                <section class="menu-section glass">
+                    <div class="menu-header">
+                        <h2>😋 Taste the Bytes</h2>
+                        <div class="menu-filters">
+                            <span class="filter-chip active" onclick="filterMenu('All')">All</span>
+                            <span class="filter-chip" onclick="filterMenu('Burgers')">Burgers</span>
+                            <span class="filter-chip" onclick="filterMenu('Sides')">Sides</span>
+                            <span class="filter-chip" onclick="filterMenu('Drinks')">Drinks</span>
+                            <span class="filter-chip" onclick="filterMenu('Desserts')">Desserts</span>
+                        </div>
+                    </div>
+                    <div id="menu-grid" class="menu-grid">
+                        <!-- Dynamic Menu Cards -->
+                    </div>
+                </section>
+
+                <!-- Conversational Agent Chat -->
+                <section class="chat-section glass">
+                    <div class="chat-header">
+                        <div class="chat-agent-status">
+                            <div class="status-dot"></div>
+                            <div>
+                                <h3 style="font-size: 0.95rem; font-weight:700;">AI Restaurant Assistant</h3>
+                                <p style="font-size: 0.7rem; color: var(--text-muted);">Ready to take your order</p>
+                            </div>
+                        </div>
+                        <button class="replenish-btn" onclick="resetChat()" title="Reset Session">
+                            <i class="fa-solid fa-arrows-rotate"></i> Reset Chat
+                        </button>
+                    </div>
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="chat-bubble assistant">
+                            👋 Hello! Welcome to the **Bite & Bytes Restaurant**. I am your conversational assistant!
+                            <br><br>
+                            You can ask me to **show the menu**, **add items to your cart** (e.g., *'add 2 fries to cart'*), **view your cart**, **checkout**, or **check your order status**.
+                            <br><br>
+                            What can I get started for you today? 🍔
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type a message (e.g., 'Add a Cheeseburger and Lemonade to cart')..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <div class="right-column">
+                <!-- Shopping Cart -->
+                <section class="cart-panel glass">
+                    <div class="cart-title">
+                        <i class="fa-solid fa-cart-shopping"></i> Shopping Cart
+                    </div>
+                    <div id="cart-items" class="cart-items">
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 2rem 0;">
+                            Cart is empty. Talk to the AI or click items on the menu to add!
+                        </div>
+                    </div>
+                    <div class="cart-total-section">
+                        <span>Total:</span>
+                        <span id="cart-subtotal" class="cart-total-price">$0.00</span>
+                    </div>
+                    <button id="checkout-button" class="checkout-btn" onclick="checkout()" disabled>
+                        <i class="fa-solid fa-credit-card"></i> Proceed to Checkout
+                    </button>
+                </section>
+
+                <!-- Recommendation Engine -->
+                <section class="recommendation-panel glass">
+                    <h3 style="font-size: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">⭐ AI Recommends</h3>
+                    <div id="recs-container" class="recs-container">
+                        <!-- Dynamic Recommendations -->
+                    </div>
+                </section>
+
+                <!-- Order Status Tracker -->
+                <section id="order-tracker" class="order-tracker-panel glass">
+                    <div class="tracker-header">
+                        <h3 style="font-size: 1rem;"><i class="fa-solid fa-route"></i> Order Tracker</h3>
+                        <span id="tracker-order-id" style="font-size: 0.75rem; font-weight: 700; color: var(--primary);">ORD-XXXX</span>
+                    </div>
+                    <div class="tracker-steps">
+                        <div id="tracker-line" class="tracker-progress-line"></div>
+                        <div class="step-node" id="step-draft">
+                            <div class="step-circle"><i class="fa-solid fa-pen-clip"></i></div>
+                            <div class="step-label">Draft</div>
+                        </div>
+                        <div class="step-node" id="step-pending">
+                            <div class="step-circle"><i class="fa-solid fa-clock"></i></div>
+                            <div class="step-label">Pending</div>
+                        </div>
+                        <div class="step-node" id="step-cooking">
+                            <div class="step-circle"><i class="fa-solid fa-fire-burner"></i></div>
+                            <div class="step-label">Cooking</div>
+                        </div>
+                        <div class="step-node" id="step-delivered">
+                            <div class="step-circle"><i class="fa-solid fa-truck-ramped-box"></i></div>
+                            <div class="step-label">Delivered</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- MANAGER DASHBOARD -->
+        <div id="manager-view" class="tab-content">
+            <!-- Analytics Top Metrics -->
+            <section class="analytics-grid">
+                <div class="metric-card glass">
+                    <span class="metric-title"><i class="fa-solid fa-wallet"></i> Gross Revenue (Approved/Delivered)</span>
+                    <span id="analytics-revenue" class="metric-value revenue-val">$0.00</span>
+                </div>
+                <div class="metric-card glass">
+                    <span class="metric-title"><i class="fa-solid fa-chart-pie"></i> Order Status Distribution</span>
+                    <div id="analytics-counts" style="font-size: 0.8rem; line-height: 1.5; margin-top: 0.25rem;">
+                        <!-- Status metrics -->
+                    </div>
+                </div>
+                <div class="metric-card glass">
+                    <span class="metric-title"><i class="fa-solid fa-fire"></i> Most Popular Items</span>
+                    <div id="analytics-popular" class="popular-list" style="margin-top: 0.25rem;">
+                        <!-- Popular items progress -->
+                    </div>
+                </div>
+                <div class="metric-card glass" id="analytics-low-stock-card">
+                    <span class="metric-title"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock Warnings</span>
+                    <div id="analytics-low-stock" style="font-size: 0.8rem; color: var(--danger); margin-top: 0.25rem;">
+                        No low stock items. Healthy levels!
+                    </div>
+                </div>
+            </section>
+
+            <div class="dashboard-grid">
+                <!-- Pending Approvals Queue -->
+                <section class="manager-card glass">
+                    <div class="manager-card-title">
+                        <i class="fa-solid fa-clipboard-list" style="color: var(--warning);"></i> Orders Requiring Manager Approval
+                    </div>
+                    <div id="pending-orders-queue" class="pending-list">
+                        <!-- Pending order cards -->
+                    </div>
+                </section>
+
+                <!-- Inventory Manager -->
+                <section class="manager-card glass">
+                    <div class="manager-card-title">
+                        <i class="fa-solid fa-cubes" style="color: var(--primary);"></i> Live Inventory & Replenishment
+                    </div>
+                    <div class="inventory-table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Food Item</th>
+                                    <th>Category</th>
+                                    <th>Stock Level</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body">
+                                <!-- Inventory items -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script>
+        // App State
+        let currentTab = 'customer';
+        let cart = [];
+        let menu = [];
+        let currentOrder = null;
+        let threadId = 'thread_' + Math.random().toString(36).substring(2, 10);
+        
+        // On Page Load
+        document.getElementById('thread-id-display').innerText = threadId;
+        fetchMenu();
+        fetchAnalytics();
+        fetchPendingOrders();
+        fetchRecommendations();
+        
+        // Periodically refresh manager views and order status
+        setInterval(() => {
+            if (currentTab === 'manager') {
+                fetchAnalytics();
+                fetchPendingOrders();
+                fetchMenu();
+            }
+            if (currentOrder && (currentOrder.status === 'PENDING_APPROVAL' || currentOrder.status === 'APPROVED')) {
+                pollOrderStatus();
+            }
+        }, 3000);
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'fa-info-circle';
+            if (type === 'success') icon = 'fa-check-circle';
+            if (type === 'error') icon = 'fa-exclamation-circle';
+            
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'customer') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('customer-view').classList.add('active');
+                currentTab = 'customer';
+                fetchMenu(); // Sync inventory
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('manager-view').classList.add('active');
+                currentTab = 'manager';
+                fetchAnalytics();
+                fetchPendingOrders();
+                fetchMenu();
+            }
+        }
+
+        // Fetch Menu from API
+        async function fetchMenu() {
+            try {
+                const res = await fetch('/api/menu');
+                menu = await res.json();
+                renderMenu();
+                renderInventoryTable();
+            } catch (err) {
+                console.error("Failed to fetch menu:", err);
+            }
+        }
+
+        // Filter Menu by Category
+        let activeCategory = 'All';
+        function filterMenu(category) {
+            activeCategory = category;
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                if (chip.innerText === category) chip.classList.add('active');
+                else chip.classList.remove('active');
+            });
+            renderMenu();
+        }
+
+        // Render Menu Cards
+        function renderMenu() {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            
+            const filtered = activeCategory === 'All' ? menu : menu.filter(i => i.category === activeCategory);
+            
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'menu-card';
+                
+                const isLow = item.available_qty < 5;
+                const stockClass = isLow ? 'menu-card-stock low-stock' : 'menu-card-stock';
+                
+                card.innerHTML = `
+                    <img src="${item.image_url}" class="menu-card-img" alt="${item.name}">
+                    <span class="${stockClass}">Stock: ${item.available_qty}</span>
+                    <div class="menu-card-body">
+                        <h4 class="menu-card-title">${item.name}</h4>
+                        <p class="menu-card-desc">${item.description}</p>
+                        <div class="menu-card-footer">
+                            <span class="menu-card-price">$${item.price.toFixed(2)}</span>
+                            <button class="add-to-cart-btn" onclick="addToCart('${item.item_id}')" ${item.available_qty <= 0 ? 'disabled' : ''}>
+                                ${item.available_qty <= 0 ? 'Out of Stock' : '<i class="fa-solid fa-plus"></i> Add'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Chat messaging
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.strip ? input.value.strip() : input.value.trim();
+            if (!text) return;
+            
+            input.value = '';
+            
+            // Append user message bubble
+            appendMessageBubble(text, 'user');
+            
+            // Show typing indicator or scroll down
+            scrollToBottom('chat-messages');
+            
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, thread_id: threadId })
+                });
+                const data = await res.json();
+                
+                // Append assistant reply
+                appendMessageBubble(data.reply, 'assistant');
+                
+                // Update local cart
+                cart = data.cart;
+                renderCart();
+                fetchRecommendations();
+                
+                if (data.current_order && data.current_order.order_id) {
+                    currentOrder = data.current_order;
+                    updateTrackerUI();
+                }
+                
+                scrollToBottom('chat-messages');
+            } catch (err) {
+                console.error(err);
+                showToast("Chat system failed to respond.", "error");
+            }
+        }
+
+        function resetChat() {
+            threadId = 'thread_' + Math.random().toString(36).substring(2, 10);
+            document.getElementById('thread-id-display').innerText = threadId;
+            cart = [];
+            currentOrder = null;
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="chat-bubble assistant">
+                    👋 Session reset! Welcome to the **Bite & Bytes Restaurant**. I am your conversational assistant!
+                    <br><br>
+                    What can I get started for you today? 🍔
+                </div>
+            `;
+            document.getElementById('order-tracker').style.display = 'none';
+            renderCart();
+            fetchMenu();
+            showToast("Chat session reset successfully.", "info");
+        }
+
+        function appendMessageBubble(content, role) {
+            const chatMessages = document.getElementById('chat-messages');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${role}`;
+            
+            // Simple markdown formatter for clean formatting in bubble
+            let formatted = content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+                
+            bubble.innerHTML = formatted;
+            chatMessages.appendChild(bubble);
+            scrollToBottom('chat-messages');
+        }
+
+        function scrollToBottom(id) {
+            const el = document.getElementById(id);
+            el.scrollTop = el.scrollHeight;
+        }
+
+        // Cart functions
+        function addToCart(itemId) {
+            const item = menu.find(i => i.item_id === itemId);
+            if (!item) return;
+            
+            // Check if item is already in cart
+            const inCart = cart.find(i => i.item_id === itemId);
+            const inCartQty = inCart ? inCart.qty : 0;
+            
+            if (inCartQty + 1 > item.available_qty) {
+                showToast(`Cannot add more of ${item.name}. Stock limit reached!`, "error");
+                return;
+            }
+            
+            if (inCart) {
+                inCart.qty += 1;
+            } else {
+                cart.push({
+                    item_id: item.item_id,
+                    name: item.name,
+                    price: item.price,
+                    qty: 1
+                });
+            }
+            renderCart();
+            fetchRecommendations();
+            showToast(`Added ${item.name} to cart.`, "success");
+        }
+
+        function changeCartQty(itemId, diff) {
+            const idx = cart.findIndex(i => i.item_id === itemId);
+            if (idx === -1) return;
+            
+            const itemMenu = menu.find(i => i.item_id === itemId);
+            
+            if (diff > 0 && cart[idx].qty + diff > itemMenu.available_qty) {
+                showToast(`Cannot add more of ${cart[idx].name}. Stock limit reached!`, "error");
+                return;
+            }
+            
+            cart[idx].qty += diff;
+            if (cart[idx].qty <= 0) {
+                cart.splice(idx, 1);
+            }
+            renderCart();
+            fetchRecommendations();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            container.innerHTML = '';
+            
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 2rem 0;">
+                        Cart is empty. Talk to the AI or click items on the menu to add!
+                    </div>
+                `;
+                document.getElementById('cart-subtotal').innerText = '$0.00';
+                document.getElementById('checkout-button').disabled = true;
+                return;
+            }
+            
+            let total = 0.0;
+            cart.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'cart-item';
+                el.innerHTML = `
+                    <div class="cart-item-details">
+                        <span class="cart-item-name">${item.name}</span>
+                        <span class="cart-item-price">$${item.price.toFixed(2)}</span>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="cart-qty-btn" onclick="changeCartQty('${item.item_id}', -1)">-</button>
+                        <span class="cart-item-qty">${item.qty}</span>
+                        <button class="cart-qty-btn" onclick="changeCartQty('${item.item_id}', 1)">+</button>
+                    </div>
+                `;
+                container.appendChild(el);
+                total += item.price * item.qty;
+            });
+            
+            document.getElementById('cart-subtotal').innerText = `$${total.toFixed(2)}`;
+            document.getElementById('checkout-button').disabled = false;
+        }
+
+        // Checkout function using AI chatbot
+        async function checkout() {
+            const checkoutBtn = document.getElementById('checkout-button');
+            checkoutBtn.disabled = true;
+            
+            // We simulate checkout by sending a message "checkout" directly to the AI
+            appendMessageBubble("Proceed to checkout", 'user');
+            
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: "checkout", thread_id: threadId })
+                });
+                const data = await res.json();
+                
+                appendMessageBubble(data.reply, 'assistant');
+                cart = data.cart;
+                renderCart();
+                
+                if (data.current_order && data.current_order.order_id) {
+                    currentOrder = data.current_order;
+                    updateTrackerUI();
+                    showToast("Order submitted for manager approval!", "success");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Checkout failed", "error");
+                checkoutBtn.disabled = false;
+            }
+        }
+
+        // Recommendation Engine
+        async function fetchRecommendations() {
+            const recContainer = document.getElementById('recs-container');
+            recContainer.innerHTML = '';
+            
+            // Simple Client-side recommendations or dynamic API
+            // Let's filter items not in cart
+            const cartIds = cart.map(i => i.item_id);
+            const candidates = menu.filter(item => !cartIds.includes(item.item_id));
+            
+            let recs = [];
+            if (cart.length === 0) {
+                // Default best sellers
+                recs = candidates.filter(c => ["burger_classic", "sides_fries", "drinks_lemon"].includes(c.item_id));
+            } else {
+                // If cart has burger, recommend sides/drinks
+                const hasBurger = cart.some(i => i.item_id.includes('burger'));
+                if (hasBurger) {
+                    recs = candidates.filter(c => c.category === 'Sides' || c.category === 'Drinks');
+                } else {
+                    recs = candidates.filter(c => c.category === 'Burgers');
+                }
+            }
+            
+            // Limit to 3 items
+            recs = recs.slice(0, 3);
+            if (recs.length === 0 && candidates.length > 0) {
+                recs = candidates.slice(0, 2);
+            }
+            
+            if (recs.length === 0) {
+                recContainer.innerHTML = '<div style="font-size: 0.75rem; color: var(--text-muted);">No suggestions right now.</div>';
+                return;
+            }
+            
+            recs.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'rec-card';
+                card.innerHTML = `
+                    <img src="${item.image_url}" class="rec-img">
+                    <div class="rec-details">
+                        <span class="rec-name">${item.name}</span>
+                        <span class="rec-price">$${item.price.toFixed(2)}</span>
+                    </div>
+                    <button class="rec-add-btn" onclick="addToCart('${item.item_id}')"><i class="fa-solid fa-plus"></i></button>
+                `;
+                recContainer.appendChild(card);
+            });
+        }
+
+        // Stepper status update
+        function updateTrackerUI() {
+            if (!currentOrder) return;
+            
+            const tracker = document.getElementById('order-tracker');
+            tracker.style.display = 'block';
+            document.getElementById('tracker-order-id').innerText = currentOrder.order_id.toUpperCase();
+            
+            // Reset steps
+            document.querySelectorAll('.step-node').forEach(node => {
+                node.className = 'step-node';
+            });
+            
+            const line = document.getElementById('tracker-line');
+            const status = currentOrder.status;
+            
+            if (status === 'DRAFT') {
+                document.getElementById('step-draft').classList.add('active');
+                line.style.width = '0%';
+            } else if (status === 'PENDING_APPROVAL') {
+                document.getElementById('step-draft').className = 'step-node completed';
+                document.getElementById('step-pending').className = 'step-node active';
+                line.style.width = '33%';
+            } else if (status === 'APPROVED' || status === 'cooking') {
+                document.getElementById('step-draft').className = 'step-node completed';
+                document.getElementById('step-pending').className = 'step-node completed';
+                document.getElementById('step-cooking').className = 'step-node active';
+                line.style.width = '66%';
+            } else if (status === 'DELIVERED') {
+                document.getElementById('step-draft').className = 'step-node completed';
+                document.getElementById('step-pending').className = 'step-node completed';
+                document.getElementById('step-cooking').className = 'step-node completed';
+                document.getElementById('step-delivered').className = 'step-node completed';
+                line.style.width = '100%';
+            } else if (status === 'REJECTED') {
+                document.getElementById('step-draft').className = 'step-node completed';
+                document.getElementById('step-pending').className = 'step-node rejected';
+                document.getElementById('step-pending').querySelector('.step-circle').innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                line.style.width = '33%';
+            }
+        }
+
+        async function pollOrderStatus() {
+            if (!currentOrder) return;
+            try {
+                const res = await fetch(`/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `Check status for ${currentOrder.order_id}`, thread_id: threadId })
+                });
+                const data = await res.json();
+                
+                if (data.current_order && data.current_order.status !== currentOrder.status) {
+                    currentOrder = data.current_order;
+                    updateTrackerUI();
+                    appendMessageBubble(`🔔 **Status Update:** Order is now **${currentOrder.status}**.`, 'system');
+                    showToast(`Order status updated to ${currentOrder.status}!`, "info");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // MANAGER FUNCTIONS
+        async function fetchAnalytics() {
+            try {
+                const res = await fetch('/api/analytics');
+                const data = await res.json();
+                
+                document.getElementById('analytics-revenue').innerText = `$${data.revenue.toFixed(2)}`;
+                
+                // Status breakdown
+                const counts = document.getElementById('analytics-counts');
+                counts.innerHTML = '';
+                const keys = Object.keys(data.status_counts);
+                if (keys.length === 0) {
+                    counts.innerText = "No orders processed yet.";
+                } else {
+                    for (const [status, count] of Object.entries(data.status_counts)) {
+                        counts.innerHTML += `<div><strong>${status}:</strong> ${count} order(s)</div>`;
+                    }
+                }
+                
+                // Popular items
+                const popular = document.getElementById('analytics-popular');
+                popular.innerHTML = '';
+                if (data.popular_items.length === 0) {
+                    popular.innerText = "No food sold yet.";
+                } else {
+                    data.popular_items.forEach(item => {
+                        const pct = Math.min(100, item.qty * 10); // scale bar
+                        popular.innerHTML += `
+                            <div class="popular-item">
+                                <span>${item.name}</span>
+                                <span>${item.qty} sold</span>
+                            </div>
+                            <div class="popular-progress-bar">
+                                <div class="popular-progress-fill" style="width: ${pct}%"></div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Low stock
+                const low = document.getElementById('analytics-low-stock');
+                const lowCard = document.getElementById('analytics-low-stock-card');
+                low.innerHTML = '';
+                if (data.low_stock.length === 0) {
+                    low.innerHTML = '<span style="color: var(--success); font-weight:700;"><i class="fa-solid fa-circle-check"></i> Stock is fully healthy!</span>';
+                    lowCard.style.borderColor = 'var(--glass-border)';
+                } else {
+                    lowCard.style.borderColor = 'var(--danger)';
+                    data.low_stock.forEach(item => {
+                        low.innerHTML += `<div style="margin-bottom: 0.2rem;"><i class="fa-solid fa-circle-exclamation"></i> <strong>${item.name}</strong> has only ${item.available_qty} left!</div>`;
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to fetch analytics:", err);
+            }
+        }
+
+        async function fetchPendingOrders() {
+            try {
+                const res = await fetch('/api/orders/pending');
+                const orders = await res.json();
+                
+                const container = document.getElementById('pending-orders-queue');
+                container.innerHTML = '';
+                
+                if (orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-pending-state">
+                            <i class="fa-regular fa-circle-check"></i>
+                            <p>Queue is empty. No pending approvals!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                orders.forEach(order => {
+                    const el = document.createElement('div');
+                    el.className = 'pending-order-card';
+                    
+                    let itemsHtml = '';
+                    order.items.forEach(it => {
+                        itemsHtml += `
+                            <div class="pending-item-row">
+                                <span class="pending-item-name">${it.name}</span>
+                                <span class="pending-item-qty">x${it.qty} ($${it.price.toFixed(2)})</span>
+                            </div>
+                        `;
+                    });
+                    
+                    el.innerHTML = `
+                        <div class="order-meta-row">
+                            <span class="order-id-label">${order.order_id.toUpperCase()}</span>
+                            <span class="order-thread-label">Thread: ${order.customer_thread_id}</span>
+                        </div>
+                        <div class="pending-order-items">
+                            ${itemsHtml}
+                        </div>
+                        <div class="pending-total-row">
+                            <span>Order Total:</span>
+                            <span class="pending-total-val">$${order.total_price.toFixed(2)}</span>
+                        </div>
+                        <input type="text" id="note-${order.order_id}" class="manager-note-input" placeholder="Add an optional note (e.g., 'Fresh patties only')...">
+                        <div class="action-buttons">
+                            <button class="action-btn approve-btn" onclick="reviewOrder('${order.order_id}', 'approve')">
+                                <i class="fa-solid fa-circle-check"></i> Approve
+                            </button>
+                            <button class="action-btn reject-btn" onclick="reviewOrder('${order.order_id}', 'reject')">
+                                <i class="fa-solid fa-circle-xmark"></i> Reject
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(el);
+                });
+            } catch (err) {
+                console.error("Failed to fetch pending orders:", err);
+            }
+        }
+
+        async function reviewOrder(orderId, decision) {
+            const note = document.getElementById(`note-${orderId}`).value;
+            const endpoint = decision === 'approve' ? '/api/orders/approve' : '/api/orders/reject';
+            
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: orderId, note: note })
+                });
+                const data = await res.json();
+                
+                showToast(`Order ${orderId} ${decision}d successfully!`, "success");
+                fetchPendingOrders();
+                fetchAnalytics();
+                fetchMenu(); // update stocks
+            } catch (err) {
+                console.error(err);
+                showToast(`Action failed.`, "error");
+            }
+        }
+
+        // Render Live Inventory table
+        function renderInventoryTable() {
+            const body = document.getElementById('inventory-table-body');
+            body.innerHTML = '';
+            
+            menu.forEach(item => {
+                const isLow = item.available_qty < 5;
+                const badge = isLow ? `<span class="badge badge-danger">Low Stock</span>` : `<span class="badge badge-success">OK</span>`;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${item.name}</td>
+                    <td>${item.category}</td>
+                    <td style="font-weight: 700;">${item.available_qty} units</td>
+                    <td>${badge}</td>
+                    <td>
+                        <div style="display:flex; gap:0.4rem;">
+                            <input type="number" id="replenish-${item.item_id}" class="replenish-input" value="10">
+                            <button class="replenish-btn" onclick="replenishStock('${item.item_id}')"><i class="fa-solid fa-plus-minus"></i> Update</button>
+                        </div>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        async function replenishStock(itemId) {
+            const input = document.getElementById(`replenish-${itemId}`);
+            const val = parseInt(input.value);
+            if (isNaN(val)) return;
+            
+            try {
+                const res = await fetch('/api/menu/update_stock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ item_id: itemId, qty_diff: val })
+                });
+                const data = await res.json();
+                
+                showToast(`Replenished ${data.item.name} stock.`, "success");
+                fetchMenu();
+                fetchAnalytics();
+            } catch (err) {
+                console.error(err);
+                showToast("Replenish failed.", "error");
+            }
+        }
+    </script>
+</body>
+</html>
