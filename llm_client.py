@@ -10,8 +10,9 @@ load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 
 def get_real_llm():
-    if not api_key or api_key.startswith("AQ.Ab8RN6LAkhEdrvkKFqnGxq_eENcNlq88V_K9wm2NUQpMXgha1A") or "Dummy" in api_key:
-        return None
+    if not api_key:
+      print("No Gemini API key found.")
+      return None
     try:
         # Create the model using langchain_google_genai
         llm = ChatGoogleGenerativeAI(

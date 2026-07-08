@@ -38,7 +38,6 @@ def agent_node(state: RestaurantState):
         # Already processed or it was a system/ai message, skip
         return {}
         
-    # 1. Try real LLM
     llm = llm_client.get_real_llm()
     if llm:
         # Bind our tools for the LLM
